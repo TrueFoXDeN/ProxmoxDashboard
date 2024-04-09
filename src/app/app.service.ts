@@ -6,7 +6,7 @@ import {interval} from "rxjs";
   providedIn: 'root'
 })
 export class AppService {
-  baseUrl: string = "http://localhost:5000";
+  baseUrl: string = "http://192.168.130.16:5000";
   pollInterval = interval(10000);
 
   constructor(private http: HttpClient) { }
