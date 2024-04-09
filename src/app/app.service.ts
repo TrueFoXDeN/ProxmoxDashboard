@@ -12,4 +12,8 @@ export class AppService {
   getStatus(){
     return this.http.get(`${this.baseUrl}/status`)
   }
+
+  toggle(node:number){
+    return this.http.post(`${this.baseUrl}/toggle/${node}`, {})
+  }
 }

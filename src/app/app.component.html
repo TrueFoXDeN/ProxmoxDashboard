@@ -19,10 +19,10 @@
           </div>
 
           @if(node.isOnline){
-            <p-button severity="success" label="Online" size="small" (click)="toggleService(node.isOnline)"></p-button>
+            <p-button severity="success" label="Online" size="small" (click)="toggleService(node.data)"></p-button>
           }
           @else{
-            <p-button severity="danger" label="Offline" size="small" (click)="toggleService(node.isOnline)"></p-button>
+            <p-button severity="danger" label="Offline" size="small" (click)="toggleService(node.data)"></p-button>
           }
 
         </div>

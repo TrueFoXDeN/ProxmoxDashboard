@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {ButtonModule} from 'primeng/button';
 import {TreeModule} from "primeng/tree";
@@ -10,6 +10,8 @@ import {InputGroupModule} from "primeng/inputgroup";
 import {CookieService} from "ngx-cookie-service";
 import {ToastModule} from "primeng/toast";
 import {AppService} from "./app.service";
+import {ExtendedTreeNode} from "./ExtendedTreeNode";
+
 
 @Component({
   selector: 'app-root',
@@ -19,45 +21,53 @@ import {AppService} from "./app.service";
   styleUrl: './app.component.sass'
 })
 
-
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   token = ''
 
-  constructor(private cookieService: CookieService, private messageService: MessageService, private appService: AppService) {
-    this.expandAll()
-  }
-
-
-  title = 'Proxmox';
-
-  values: TreeNode[] = [{
+  values: ExtendedTreeNode[] = [{
     key: '0',
     label: 'Compute Server',
     icon: 'pi pi-fw pi-server',
-    data: '0',
-    // @ts-ignore
-    isOnline: true,
+    data: 0,
+    isOnline: false,
     children: [
       {
         key: '0-0',
         label: 'Dev Windows',
-        data: '1',
-        // @ts-ignore
+        data: 1,
         isOnline: false,
         icon: 'pi pi-fw pi-desktop',
-
       },
       {
         key: '0-1',
         label: 'Minecraft Linux',
-        data: '2',
-        // @ts-ignore
-        isOnline: true,
+        data: 2,
+        isOnline: false,
         icon: 'pi pi-fw pi-desktop',
 
       }
     ]
   }]
+
+  constructor(private cookieService: CookieService, private messageService: MessageService, private appService: AppService) {
+    this.expandAll()
+  }
+
+  ngAfterViewInit(): void {
+    if (this.cookieService.get('token') == '') {
+      console.log('no token')
+      this.messageService.add({severity: 'error', detail: 'No Token available'})
+    } else {
+      this.appService.getStatus().subscribe({
+        next: (res: any) => {
+          this.setStatus(res.status)
+        }, error: (err: any) => {
+          this.messageService.add({severity: 'error', detail: 'Token invalid'})
+        }
+      })
+    }
+  }
+
 
   expandAll() {
     this.values.forEach((node) => {
@@ -78,16 +88,106 @@ export class AppComponent {
   }
 
   toggleService(data: any) {
-    console.log(data)
+    switch (data) {
+      case 0:
+        if (this.values[0].isOnline) {
+          this.messageService.add({severity: 'info', detail: 'Shutting down Compute Server'})
+          this.appService.toggle(0).subscribe({
+            next: (res: any) => {
+              this.messageService.add({severity: 'success', detail: 'Compute Server shut down'})
+              this.values[0].isOnline = false
+            }, error: (err: any) => {
+              this.messageService.add({severity: 'error', detail: 'Compute Server shut down failed'})
+            }
+          })
+        } else {
+          this.messageService.add({severity: 'info', detail: 'Starting up Compute Server'})
+          this.appService.toggle(0).subscribe({
+            next: (res: any) => {
+              this.messageService.add({severity: 'success', detail: 'Compute Server started '})
+              this.values[0].isOnline = true
+            }, error: (err: any) => {
+              this.messageService.add({severity: 'error', detail: 'Compute Server startup failed'})
+            }
+          })
+        }
+        break
+      case 1:
+        // @ts-ignore
+        if (this.values[0].children[0].isOnline) {
+          this.messageService.add({severity: 'info', detail: 'Shutting down Dev Windows'})
+          this.appService.toggle(1).subscribe({
+            next: (res: any) => {
+              this.messageService.add({severity: 'success', detail: 'Dev Windows shut down'})
+              // @ts-ignore
+              this.values[0].children[0].isOnline = false
+            }, error: (err: any) => {
+              this.messageService.add({severity: 'error', detail: 'Dev Windows shut down failed'})
+            }
+          })
+        } else {
+          this.messageService.add({severity: 'info', detail: 'Starting up Dev Windows'})
+          this.appService.toggle(1).subscribe({
+            next: (res: any) => {
+              this.messageService.add({severity: 'success', detail: 'Dev Windows started'})
+              // @ts-ignore
+              this.values[0].children[0].isOnline = true
+            }, error: (err: any) => {
+              this.messageService.add({severity: 'error', detail: 'Dev Windows startup failed'})
+            }
+          })
+        }
+        break
+      case 2:
+        // @ts-ignore
+        if (this.values[0].children[1].isOnline) {
+          this.messageService.add({severity: 'info', detail: 'Shutting down Minecraft Linux'})
+          this.appService.toggle(2).subscribe({
+            next: (res: any) => {
+              this.messageService.add({severity: 'success', detail: 'Minecraft Linux shut down'})
+              // @ts-ignore
+              this.values[0].children[1].isOnline = false
+            }, error: (err: any) => {
+              this.messageService.add({severity: 'error', detail: 'Minecraft Linux shut down failed'})
+            }
+          })
+        } else {
+          this.messageService.add({severity: 'info', detail: 'Starting up Minecraft Linux'})
+          this.appService.toggle(2).subscribe({
+            next: (res: any) => {
+              this.messageService.add({severity: 'success', detail: 'Minecraft Linux started'})
+              // @ts-ignore
+              this.values[0].children[1].isOnline = true
+            }, error: (err: any) => {
+              this.messageService.add({severity: 'error', detail: 'Minecraft Linux startup failed'})
+            }
+          })
+        }
+        break
+    }
+
+  }
+
+  setStatus(status: boolean[]) {
+    this.values[0].isOnline = status[0]
+    // @ts-ignore
+    this.values[0].children[0].isOnline = status[1]
+    // @ts-ignore
+    this.values[0].children[1].isOnline = status[2]
+
   }
 
   saveToken() {
     this.cookieService.set('token', this.token)
     this.token = ''
-    this.messageService.add({severity: 'success', detail: 'Token saved'})
+
     this.appService.getStatus().subscribe({
-      next: (res) => {
-        console.log(res)
+      next: (res: any) => {
+        this.setStatus(res.status)
+        this.messageService.add({severity: 'success', detail: 'Token saved'})
+
+      }, error: (err: any) => {
+        this.messageService.add({severity: 'error', detail: 'Token invalid'})
       }
     })
 
