@@ -51,6 +51,7 @@ export class AppComponent implements AfterViewInit {
 
   constructor(private cookieService: CookieService, private messageService: MessageService, private appService: AppService) {
     this.expandAll()
+
   }
 
   ngAfterViewInit(): void {
@@ -66,6 +67,17 @@ export class AppComponent implements AfterViewInit {
         }
       })
     }
+    this.appService.pollInterval.subscribe({
+      next: (res: any) => {
+        this.appService.getStatus().subscribe({
+          next: (res: any) => {
+            this.setStatus(res.status)
+          }, error: (err: any) => {
+            this.messageService.add({severity: 'error', detail: 'Status poll failed'})
+          }
+        })
+      }
+    })
   }
 
 
