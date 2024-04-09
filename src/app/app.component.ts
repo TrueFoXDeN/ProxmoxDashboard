@@ -23,6 +23,7 @@ import {ExtendedTreeNode} from "./ExtendedTreeNode";
 
 export class AppComponent implements AfterViewInit {
   token = ''
+  lastUpdate : Date = new Date()
 
   values: ExtendedTreeNode[] = [{
     key: '0',
@@ -59,6 +60,7 @@ export class AppComponent implements AfterViewInit {
       console.log('no token')
       this.messageService.add({severity: 'error', detail: 'No Token available'})
     } else {
+      this.messageService.add({severity: 'info', detail: 'Starting poll...'})
       this.appService.getStatus().subscribe({
         next: (res: any) => {
           this.setStatus(res.status)
@@ -187,6 +189,7 @@ export class AppComponent implements AfterViewInit {
     // @ts-ignore
     this.values[0].children[1].isOnline = status[2]
 
+    this.setUpdateTime()
   }
 
   saveToken() {
@@ -202,6 +205,9 @@ export class AppComponent implements AfterViewInit {
         this.messageService.add({severity: 'error', detail: 'Token invalid'})
       }
     })
+  }
 
+  setUpdateTime(){
+    this.lastUpdate = new Date()
   }
 }
