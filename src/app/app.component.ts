@@ -9,6 +9,7 @@ import {FormsModule} from "@angular/forms";
 import {InputGroupModule} from "primeng/inputgroup";
 import {CookieService} from "ngx-cookie-service";
 import {ToastModule} from "primeng/toast";
+import {AppService} from "./app.service";
 
 @Component({
   selector: 'app-root',
@@ -22,10 +23,9 @@ import {ToastModule} from "primeng/toast";
 export class AppComponent {
   token = ''
 
-  constructor(private cookieService: CookieService, private messageService: MessageService) {
+  constructor(private cookieService: CookieService, private messageService: MessageService, private appService: AppService) {
     this.expandAll()
   }
-
 
 
   title = 'Proxmox';
@@ -66,7 +66,7 @@ export class AppComponent {
   }
 
   private expandRecursive(node: TreeNode, isExpand: boolean, iteration: number) {
-    if(iteration > 0){
+    if (iteration > 0) {
       return
     }
     node.expanded = isExpand;
@@ -77,7 +77,7 @@ export class AppComponent {
     }
   }
 
-  toggleService(data: any){
+  toggleService(data: any) {
     console.log(data)
   }
 
@@ -85,6 +85,11 @@ export class AppComponent {
     this.cookieService.set('token', this.token)
     this.token = ''
     this.messageService.add({severity: 'success', detail: 'Token saved'})
+    this.appService.getStatus().subscribe({
+      next: (res) => {
+        console.log(res)
+      }
+    })
 
   }
 }
