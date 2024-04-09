@@ -1,3 +1,14 @@
+<p-toast></p-toast>
+<div class="flex w-full justify-content-center">
+  <div class="flex justify-content-center col-3">
+    <p-inputGroup>
+      <input pInputText [(ngModel)]="token"/>
+      <button type="button" pButton label="Save" [outlined]="true" (click)="saveToken()"></button>
+    </p-inputGroup>
+</div>
+
+
+</div>
 <div class="mx-8 main-container align-items-center align-content-center">
 
     <p-tree class="bg-surface-b" layout="horizontal" [value]="values">
