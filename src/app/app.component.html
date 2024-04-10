@@ -9,9 +9,10 @@
 
 
 </div>
-<div class="mx-8 main-container align-items-center align-content-center">
-
-    <p-tree class="bg-surface-b" layout="horizontal" [value]="values">
+<div class="mx-8 flex flex-column main-container justify-content-center align-items-end">
+  <div class="text-300 mb-2">{{lastUpdate | date: 'dd.MM.yyyy HH:mm:ss'}}</div>
+  <div class="w-full">
+    <p-tree class="" layout="horizontal" [value]="values">
       <ng-template let-node pTemplate="default">
         <div class="flex flex-row align-items-center justify-content-center gap-3">
           <div class="">
@@ -28,8 +29,7 @@
         </div>
       </ng-template>
     </p-tree>
-
-
+  </div>
 </div>
 
 

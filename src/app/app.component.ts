@@ -3,7 +3,7 @@ import {RouterOutlet} from '@angular/router';
 import {ButtonModule} from 'primeng/button';
 import {TreeModule} from "primeng/tree";
 import {MessageService, TreeNode} from "primeng/api";
-import {NgClass} from "@angular/common";
+import {DatePipe, NgClass} from "@angular/common";
 import {InputTextModule} from "primeng/inputtext";
 import {FormsModule} from "@angular/forms";
 import {InputGroupModule} from "primeng/inputgroup";
@@ -16,7 +16,7 @@ import {ExtendedTreeNode} from "./ExtendedTreeNode";
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ButtonModule, TreeModule, NgClass, InputTextModule, FormsModule, InputGroupModule, ToastModule],
+  imports: [RouterOutlet, ButtonModule, TreeModule, NgClass, InputTextModule, FormsModule, InputGroupModule, ToastModule, DatePipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.sass'
 })
@@ -193,7 +193,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   saveToken() {
-    this.cookieService.set('token', this.token)
+    this.cookieService.set('token', this.token, {expires: 1000})
     this.token = ''
 
     this.appService.getStatus().subscribe({
